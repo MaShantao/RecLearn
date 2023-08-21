@@ -16,7 +16,8 @@ from modules import *
 
 class DIN(Model):
     def __init__(self, feature_columns, behavior_feature_list, att_hidden_units=(80, 40),
-                 ffn_hidden_units=(80, 40), att_activation='prelu', ffn_activation='prelu', maxlen=40, dnn_dropout=0., embed_reg=1e-4):
+                 ffn_hidden_units=(80, 40), att_activation='prelu', ffn_activation='prelu', maxlen=40, dnn_dropout=0.,
+                 embed_reg=1e-4):
         """
         DIN
         :param feature_columns: A list. dense_feature_columns + sparse_feature_columns
@@ -49,20 +50,20 @@ class DIN(Model):
                                     if feat['feat'] not in behavior_feature_list]
         # behavior embedding layers, item id and category id
         self.embed_seq_layers = [Embedding(input_dim=feat['feat_num'],
-                                              input_length=1,
-                                              output_dim=feat['embed_dim'],
-                                              embeddings_initializer='random_uniform',
-                                              embeddings_regularizer=l2(embed_reg))
-                                    for feat in self.sparse_feature_columns
-                                    if feat['feat'] in behavior_feature_list]
+                                           input_length=1,
+                                           output_dim=feat['embed_dim'],
+                                           embeddings_initializer='random_uniform',
+                                           embeddings_regularizer=l2(embed_reg))
+                                 for feat in self.sparse_feature_columns
+                                 if feat['feat'] in behavior_feature_list]
 
         # attention layer
         self.attention_layer = Attention_Layer(att_hidden_units, att_activation)
 
         self.bn = BatchNormalization(trainable=True)
         # ffn
-        self.ffn = [Dense(unit, activation=PReLU() if ffn_activation == 'prelu' else Dice())\
-             for unit in ffn_hidden_units]
+        self.ffn = [Dense(unit, activation=PReLU() if ffn_activation == 'prelu' else Dice()) \
+                    for unit in ffn_hidden_units]
         self.dropout = Dropout(dnn_dropout)
         self.dense_final = Dense(1)
 
@@ -71,7 +72,8 @@ class DIN(Model):
         # seq_inputs (None, maxlen, behavior_num)
         # item_inputs (None, behavior_num)
         dense_inputs, sparse_inputs, seq_inputs, item_inputs = inputs
-        # attention ---> mask, if the element of seq_inputs is equal 0, it must be filled in. 
+
+        # attention ---> mask, if the element of seq_inputs is equal 0, it must be filled in.
         mask = tf.cast(tf.not_equal(seq_inputs[:, :, 0], 0), dtype=tf.float32)  # (None, maxlen)
         # other
         other_info = dense_inputs
@@ -79,10 +81,15 @@ class DIN(Model):
             other_info = tf.concat([other_info, self.embed_sparse_layers[i](sparse_inputs[:, i])], axis=-1)
 
         # seq, item embedding and category embedding should concatenate
-        seq_embed = tf.concat([self.embed_seq_layers[i](seq_inputs[:, :, i]) for i in range(self.behavior_num)], axis=-1)
+        seq_embed = tf.concat([self.embed_seq_layers[i](seq_inputs[:, :, i]) for i in range(self.behavior_num)],
+                              axis=-1)
         item_embed = tf.concat([self.embed_seq_layers[i](item_inputs[:, i]) for i in range(self.behavior_num)], axis=-1)
-    
+
         # att
+        # item_embed  (None, embed_dim)
+        # seq_embed (None, maxlen , embed_dim)
+        # seq_embed (None, maxlen , embed_dim)
+        # mask (None, maxlen)
         user_info = self.attention_layer([item_embed, seq_embed, seq_embed, mask])  # (None, d * 2)
 
         # concat user_info(att hist), cadidate item embedding, other features
@@ -91,7 +98,7 @@ class DIN(Model):
         else:
             info_all = tf.concat([user_info, item_embed], axis=-1)
 
-        info_all = self.bn(info_all)
+        # info_all = self.bn(info_all)
 
         # ffn
         for dense in self.ffn:
@@ -102,12 +109,12 @@ class DIN(Model):
         return outputs
 
     def summary(self):
-        dense_inputs = Input(shape=(self.dense_len, ), dtype=tf.float32)
-        sparse_inputs = Input(shape=(self.other_sparse_len, ), dtype=tf.int32)
+        dense_inputs = Input(shape=(self.dense_len,), dtype=tf.float32)
+        sparse_inputs = Input(shape=(self.other_sparse_len,), dtype=tf.int32)
         seq_inputs = Input(shape=(self.maxlen, self.behavior_num), dtype=tf.int32)
-        item_inputs = Input(shape=(self.behavior_num, ), dtype=tf.int32)
+        item_inputs = Input(shape=(self.behavior_num,), dtype=tf.int32)
         tf.keras.Model(inputs=[dense_inputs, sparse_inputs, seq_inputs, item_inputs],
-                    outputs=self.call([dense_inputs, sparse_inputs, seq_inputs, item_inputs])).summary()
+                       outputs=self.call([dense_inputs, sparse_inputs, seq_inputs, item_inputs])).summary()
 
 
 def test_model():
@@ -119,6 +126,5 @@ def test_model():
     features = [dense_features, sparse_features]
     model = DIN(features, behavior_list)
     model.summary()
-
 
 # test_model()

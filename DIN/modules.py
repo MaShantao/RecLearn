@@ -21,6 +21,11 @@ class Attention_Layer(Layer):
         self.att_final_dense = Dense(1)
 
     def call(self, inputs):
+        # item_embed  (None, embed_dim)
+        # seq_embed (None, maxlen , embed_dim)
+        # seq_embed (None, maxlen , embed_dim)
+        # mask (None, maxlen)
+
         # query: candidate item  (None, d * 2), d is the dimension of embedding
         # key: hist items  (None, seq_len, d * 2) 
         # value: hist items  (None, seq_len, d * 2) 

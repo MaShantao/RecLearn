@@ -11,14 +11,11 @@ The values of these features have been hashed onto 32 bits for anonymization pur
 @author: Ziyao Geng(zggzy1996@163.com)
 """
 
-import pandas as pd
-import numpy as np
 
 from sklearn.preprocessing import LabelEncoder, KBinsDiscretizer
 from sklearn.model_selection import train_test_split
-
+import pandas as pd
 from .utils import sparseFeature
-
 
 def create_criteo_dataset(file, embed_dim=8, read_part=True, sample_num=100000, test_size=0.2):
     """

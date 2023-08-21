@@ -23,6 +23,7 @@ class FM_Layer(Layer):
         :param v_reg: the regularization coefficient of parameter v
         """
         super(FM_Layer, self).__init__()
+        print("feature_columns = ",feature_columns)
         self.sparse_feature_columns = feature_columns
         self.index_mapping = []
         self.feature_length = 0
@@ -48,7 +49,7 @@ class FM_Layer(Layer):
 
     def call(self, inputs, **kwargs):
         # mapping
-        inputs = inputs + tf.convert_to_tensor(self.index_mapping)
+        inputs = inputs + tf.convert_to_tensor(self.index_mapping)  # (batch_size, 39)
         # first order
         first_order = self.w0 + tf.reduce_sum(tf.nn.embedding_lookup(self.w, inputs), axis=1)  # (batch_size, 1)
         # second order

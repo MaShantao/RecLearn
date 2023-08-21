@@ -5,11 +5,8 @@ train DIN model
 
 @author: Ziyao Geng
 """
-import tensorflow as tf
-from time import time
 from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.metrics import AUC
 
 from model import DIN
@@ -22,7 +19,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
 if __name__ == '__main__':
     # ========================= Hyper Parameters =======================
-    file = 'raw_data/remap.pkl'
+    file = '../dataset/amazon_electronic/remap.pkl'
     maxlen = 20
     
     embed_dim = 8

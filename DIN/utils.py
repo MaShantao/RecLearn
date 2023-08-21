@@ -41,7 +41,7 @@ def create_amazon_electronic_dataset(file, embed_dim=8, maxlen=40):
     :return: user_num, item_num, train_df, test_df
     """
     print('==========Data Preprocess Start============')
-    with open('raw_data/remap.pkl', 'rb') as f:
+    with open('../dataset/amazon_electronic/remap.pkl', 'rb') as f:
         reviews_df = pickle.load(f)
         cate_list = pickle.load(f)
         user_count, item_count, cate_count, example_count = pickle.load(f)
@@ -84,10 +84,10 @@ def create_amazon_electronic_dataset(file, embed_dim=8, maxlen=40):
     # feature columns
     feature_columns = [[],
                        [sparseFeature('item_id', item_count, embed_dim),
-                        ]]  # sparseFeature('cate_id', cate_count, embed_dim)
+                        sparseFeature('cate_id', cate_count, embed_dim)]]
 
     # behavior
-    behavior_list = ['item_id']  # , 'cate_id'
+    behavior_list = ['item_id', 'cate_id']  # , 'cate_id'
 
     # shuffle
     random.shuffle(train_data)
@@ -116,4 +116,4 @@ def create_amazon_electronic_dataset(file, embed_dim=8, maxlen=40):
     print('============Data Preprocess End=============')
     return feature_columns, behavior_list, (train_X, train_y), (val_X, val_y), (test_X, test_y)
 
-# create_amazon_electronic_dataset('raw_data/remap.pkl')
+# create_amazon_electronic_dataset('../dataset/amazon_electronic/remap.pkl')

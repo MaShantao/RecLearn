@@ -14,6 +14,7 @@ from tensorflow.keras.metrics import AUC
 
 from model import FFM
 from data_process.criteo import create_criteo_dataset
+import numpy as np  #借助numpy模块的set_printoptions()函数，将打印上限设置为无限即可
 
 import os
 
@@ -32,11 +33,12 @@ if __name__ == '__main__':
     read_part = True
     sample_num = 1000000
     test_size = 0.2
+    np.set_printoptions(threshold=np.inf)
 
     k = 10
 
     learning_rate = 0.001
-    batch_size = 4096
+    batch_size = 2
     epochs = 10
 
     # ========================== Create dataset =======================

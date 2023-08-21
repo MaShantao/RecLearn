@@ -61,4 +61,4 @@ class NFM(Model):
 
     def summary(self):
         sparse_inputs = Input(shape=(len(self.sparse_feature_columns),), dtype=tf.int32)
-        keras.Model(inputs=sparse_inputs, outputs=self.call(sparse_inputs)).summary()
+        tf.keras.Model(inputs=sparse_inputs, outputs=self.call(sparse_inputs)).summary()

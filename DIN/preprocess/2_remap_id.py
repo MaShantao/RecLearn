@@ -43,11 +43,11 @@ def build_map(df, col_name):
 
 
 # reviews
-reviews_df = pd.read_pickle('../raw_data/reviews.pkl')
+reviews_df = pd.read_pickle('../../dataset/amazon_electronic/reviews.pkl')
 reviews_df = reviews_df[['reviewerID', 'asin', 'unixReviewTime']]
 
 # meta
-meta_df = pd.read_pickle('../raw_data/meta.pkl')
+meta_df = pd.read_pickle('../../dataset/amazon_electronic/meta.pkl')
 meta_df = meta_df[['asin', 'categories']]
 # 类别只保留最后一个
 meta_df['categories'] = meta_df['categories'].map(lambda x: x[-1][-1])
@@ -79,7 +79,7 @@ reviews_df = reviews_df[['reviewerID', 'asin', 'unixReviewTime']]
 cate_list = np.array(meta_df['categories'], dtype='int32')
 
 # 保存所需数据为pkl文件
-with open('../raw_data/remap.pkl', 'wb') as f:
+with open('../../dataset/amazon_electronic/remap.pkl', 'wb') as f:
     pickle.dump(reviews_df, f, pickle.HIGHEST_PROTOCOL)
     pickle.dump(cate_list, f, pickle.HIGHEST_PROTOCOL)
     pickle.dump((user_count, item_count, cate_count, example_count),
